@@ -1,0 +1,6 @@
+[submodule "common_cmake"]
+	path = common_cmake
+	url = https://github.com/bl-sdk/common_cmake.git
+[submodule "libs/minhook"]
+	path = libs/minhook
+	url = https://github.com/TsudaKageyu/minhook.git

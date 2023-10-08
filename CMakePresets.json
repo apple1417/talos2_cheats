@@ -1,0 +1,121 @@
+﻿{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "_base",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "installDir": "${sourceDir}/out/install/${presetName}"
+    },
+    {
+      "name": "_clang_x64",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "$env{VSINSTALLDIR}",
+        "rhs": ""
+      },
+      "generator": "Ninja",
+      "toolchainFile": "common_cmake/clang-x64.cmake"
+    },
+    {
+      "name": "_mingw_x64",
+      "hidden": true,
+      "condition": {
+        "type": "notEquals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "toolchainFile": "common_cmake/x86_64-w64-mingw32.cmake"
+    },
+    {
+      "name": "_msvc_x64",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "cl.exe",
+        "CMAKE_CXX_COMPILER": "cl.exe"
+      },
+      "architecture": {
+        "value": "Win64",
+        "strategy": "external"
+      },
+      "toolchainFile": "common_cmake/msvc.cmake"
+    },
+    {
+      "name": "_debug",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "_release",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "clang-debug",
+      "displayName": "Debug (Clang)",
+      "inherits": [
+        "_base",
+        "_clang_x64",
+        "_debug"
+      ]
+    },
+    {
+      "name": "clang-release",
+      "displayName": "Release (Clang)",
+      "inherits": [
+        "_base",
+        "_clang_x64",
+        "_release"
+      ]
+    },
+    {
+      "hidden": true,
+      "name": "mingw-debug",
+      "displayName": "Debug (MinGW)",
+      "inherits": [
+        "_base",
+        "_mingw_x64",
+        "_debug"
+      ]
+    },
+    {
+      "hidden": true,
+      "name": "mingw-release",
+      "displayName": "Release (MinGW)",
+      "inherits": [
+        "_base",
+        "_mingw_x64",
+        "_release"
+      ]
+    },
+    {
+      "name": "msvc-debug",
+      "displayName": "Debug (MSVC)",
+      "inherits": [
+        "_base",
+        "_msvc_x64",
+        "_debug"
+      ]
+    },
+    {
+      "name": "msvc-release",
+      "displayName": "Release (MSVC)",
+      "inherits": [
+        "_base",
+        "_msvc_x64",
+        "_release"
+      ]
+    }
+  ]
+}

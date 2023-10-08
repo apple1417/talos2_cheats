@@ -42,7 +42,7 @@
         "CMAKE_CXX_COMPILER": "cl.exe"
       },
       "architecture": {
-        "value": "Win64",
+        "value": "x64",
         "strategy": "external"
       },
       "toolchainFile": "common_cmake/msvc.cmake"

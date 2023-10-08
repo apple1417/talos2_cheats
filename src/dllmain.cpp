@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "gui/gui.h"
+#include "pointers.h"
 
 namespace {
 
@@ -18,6 +19,7 @@ DWORD WINAPI startup_thread(LPVOID /*unused*/) {
     }
 
     try {
+        t2c::pointers::init();
         t2c::gui::init();
     } catch (std::exception& ex) {
         std::cerr << "[t2c] Exception occured during initalization: " << ex.what() << "\n";

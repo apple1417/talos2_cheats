@@ -28,10 +28,12 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND h_wnd,
 
 #include <kiero.h>
 
+#include <array>
 #include <chrono>
 #include <cstdint>
 #include <iostream>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 using std::int16_t;

@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include "cheats.h"
 #include "gui/dx11.h"
 #include "gui/dx12.h"
 #include "gui/gui.h"
@@ -12,6 +13,42 @@ namespace {
 const constexpr auto KEY_STATE_DOWN = 0x8000;
 
 WNDPROC window_proc_ptr{};
+
+/**
+ * @brief Processes our various key up hooks.
+ *
+ * @param w_param The key which was pressed.
+ * @return True if to suppress the key event.
+ */
+bool process_keyup_hooks(WPARAM w_param) {
+    switch (w_param) {
+        case VK_INSERT:
+            if ((GetKeyState(VK_CONTROL) & KEY_STATE_DOWN) != 0
+                && (GetKeyState(VK_SHIFT) & KEY_STATE_DOWN) != 0) {
+                gui::toggle_showing();
+                return true;
+            }
+
+        case 'Y':
+            cheats::toggle_ghost();
+            return true;
+        case 'J':
+            cheats::toggle_turbo();
+            return true;
+        case 'G':
+            cheats::toggle_god();
+            return true;
+        case 'M':
+            cheats::save_pos();
+            return true;
+        case 'R':
+            cheats::load_pos();
+            return true;
+
+        default:
+            return false;
+    }
+}
 
 /**
  * @brief `WinProc` hook, used to pass input to imgui.
@@ -51,9 +88,7 @@ LRESULT window_proc_hook(HWND h_wnd, UINT u_msg, WPARAM w_param, LPARAM l_param)
             }
             break;
         case WM_KEYUP:
-            if (w_param == VK_INSERT && (GetKeyState(VK_CONTROL) & KEY_STATE_DOWN) != 0
-                && (GetKeyState(VK_SHIFT) & KEY_STATE_DOWN) != 0) {
-                gui::toggle_showing();
+            if (process_keyup_hooks(w_param)) {
                 return 1;
             }
             [[fallthrough]];

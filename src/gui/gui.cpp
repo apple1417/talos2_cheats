@@ -37,7 +37,7 @@ void draw_position_widgets(void) {
  * @brief Draws the save/load position widgets.
  */
 void draw_pos_save_load_pos_widgets(void) {
-    if (ImGui::Button("Save")) {
+    if (ImGui::Button("Save (M)")) {
         cheats::save_pos();
     }
 
@@ -46,7 +46,7 @@ void draw_pos_save_load_pos_widgets(void) {
         ImGui::BeginDisabled();
     }
     ImGui::SameLine();
-    if (ImGui::Button("Load")) {
+    if (ImGui::Button("Load (R)")) {
         cheats::load_pos();
     }
     if (load_disabled) {
@@ -80,12 +80,12 @@ void draw_nullable_checkbox(const char* name, bool* ptr) {
  * @brief Draws the widgets to enable individual cheats.
  */
 void draw_cheats_widgets(void) {
-    if (ImGui::Button("Ghost")) {
+    if (ImGui::Button("Ghost (Y)")) {
         cheats::toggle_ghost();
     }
 
-    draw_nullable_checkbox("Turbo", pointers::turbo());
-    draw_nullable_checkbox("God", pointers::god());
+    draw_nullable_checkbox("Turbo (J)", pointers::turbo());
+    draw_nullable_checkbox("God (G)", pointers::god());
 }
 
 }  // namespace

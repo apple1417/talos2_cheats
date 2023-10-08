@@ -17,6 +17,16 @@ struct Vec3d {
 Vec3d* position(void);
 
 /**
+ * @brief Enables ghost mode.
+ */
+void enable_ghost(void);
+
+/**
+ * @brief Disables ghost mode.
+ */
+void disable_ghost(void);
+
+/**
  * @brief Initalizes all pointers.
  */
 void init(void);

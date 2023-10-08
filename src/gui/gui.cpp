@@ -52,10 +52,27 @@ void show_position_widgets(void) {
 }  // namespace
 
 void render(void) {
+    if (!showing_window) {
+        return;
+    }
+
     ImGui::ShowDemoWindow();
 
     ImGui::Begin("apple's Talos 2 Cheats (Ctrl+Shift+Ins)", &showing_window,
                  ImGuiWindowFlags_NoCollapse);
+
+    static bool ghost_on = false;
+    bool old_ghost = ghost_on;
+
+    ImGui::Checkbox("Ghost", &ghost_on);
+
+    if (ghost_on != old_ghost) {
+        if (ghost_on) {
+            pointers::enable_ghost();
+        } else {
+            pointers::disable_ghost();
+        }
+    }
 
     show_position_widgets();
 

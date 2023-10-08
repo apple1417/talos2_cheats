@@ -49,6 +49,17 @@ T read_offset(uintptr_t address) {
 }
 
 /**
+ * @brief Unlocks a region of memory for full read/write access. Intended for hex edits.
+ *
+ * @param start The start of the range to unlock.
+ * @param size The size of the range to unlock.
+ */
+void unlock_range(uintptr_t start, size_t size);
+inline void unlock_range(uint8_t* start, size_t size) {
+    unlock_range(reinterpret_cast<uintptr_t>(start), size);
+}
+
+/**
  * @brief Helper holding the values involved in a sigscan pattern.
  *
  * @tparam n The size of the pattern, in bytes.

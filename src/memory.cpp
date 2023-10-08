@@ -73,4 +73,12 @@ uintptr_t read_offset(uintptr_t address) {
     return address + *reinterpret_cast<int32_t*>(address) + 4;
 }
 
+void unlock_range(uintptr_t start, size_t size) {
+    DWORD old_protect = 0;
+    if (VirtualProtect(reinterpret_cast<LPVOID>(start), size, PAGE_EXECUTE_READWRITE, &old_protect)
+        == 0) {
+        throw std::runtime_error("VirtualProtect failed!");
+    }
+}
+
 }  // namespace t2c::memory

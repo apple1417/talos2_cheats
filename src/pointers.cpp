@@ -53,6 +53,21 @@ talos_char_enable_ghost_func talos_char_enable_ghost_ptr{};
 using talos_char_enable_walk_func = void (*)(UTalosCharacter* self);
 talos_char_enable_walk_func talos_char_enable_walk_ptr{};
 
+const constinit memory::Pattern<18> SHOW_CHEATS_PATTERN{
+    "0F84 ????????"      // je Talos2-Win64-Shipping.exe+25733AB
+    "49 8B 8E ????????"  // mov rcx, [r14+00000288]
+    "33 D2"              // xor edx, edx
+    "48 8B 01"           // mov rax, [rcx]
+};
+const constexpr uint8_t SHOW_CHEATS_INJECTED_CODE[] = {
+    0x90,  // nop
+    0x90,  // nop
+    0x90,  // nop
+    0x90,  // nop
+    0x90,  // nop
+    0x90,  // nop
+};
+
 /**
  * @brief Safely dereferences a chain of offsets, short circuiting if any become invalid.
  *
@@ -110,6 +125,13 @@ void init(void) {
         TALOS_CHAR_ENABLE_GHOST_PATTERN.sigscan<talos_char_enable_ghost_func>();
     talos_char_enable_walk_ptr =
         TALOS_CHAR_ENABLE_WALK_PATTERN.sigscan<talos_char_enable_walk_func>();
+
+    auto show_cheats = SHOW_CHEATS_PATTERN.sigscan();
+    if (show_cheats != 0) {
+        memory::unlock_range(show_cheats, sizeof(SHOW_CHEATS_INJECTED_CODE));
+        memcpy(reinterpret_cast<void*>(show_cheats), &SHOW_CHEATS_INJECTED_CODE[0],
+               sizeof(SHOW_CHEATS_INJECTED_CODE));
+    }
 }
 
 Vec3d* position(void) {

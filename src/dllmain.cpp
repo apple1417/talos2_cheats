@@ -1,5 +1,7 @@
 #include "pch.h"
 
+#include "gui/gui.h"
+
 namespace {
 
 /**
@@ -9,6 +11,20 @@ namespace {
  * @return unused.
  */
 DWORD WINAPI startup_thread(LPVOID /*unused*/) {
+    auto mh_ret = MH_Initialize();
+    if (mh_ret != MH_OK) {
+        std::cerr << "[t2c] Minhook initialization failed: " << mh_ret << "\n";
+        return 0;
+    }
+
+    try {
+        t2c::gui::init();
+    } catch (std::exception& ex) {
+        std::cerr << "[t2c] Exception occured during initalization: " << ex.what() << "\n";
+    }
+
+    std::cout << "[t2c] Talos 2 Cheats loaded\n";
+
     return 1;
 }
 

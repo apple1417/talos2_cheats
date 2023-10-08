@@ -1,6 +1,8 @@
 [files]
 extend-exclude = [
     "fmt",
+    "imgui",
+    "kiero",
     "minhook",
     "pybind11",
     "LICENSE",

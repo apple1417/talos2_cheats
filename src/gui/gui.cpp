@@ -1,8 +1,8 @@
 #include "pch.h"
 
+#include "cheats.h"
 #include "gui/gui.h"
 #include "gui/hook.h"
-#include "imgui.h"
 #include "pointers.h"
 
 namespace t2c::gui {
@@ -12,17 +12,13 @@ namespace {
 bool showing_window = true;
 
 /**
- * @brief Shows the widgets which interact with player position.
+ * @brief Draws the widgets holding player position.
  */
-void show_position_widgets(void) {
-    // Dummy we use when we don't have a valid pointer
-    static pointers::Vec3d dummy_pos{};
-
-    ImGui::SeparatorText("Position");
-
+void draw_position_widgets(void) {
     auto pos = pointers::position();
     bool pos_disabled = pos == nullptr;
 
+    pointers::Vec3d dummy_pos{};
     if (pos_disabled) {
         ImGui::BeginDisabled();
         pos = &dummy_pos;
@@ -35,20 +31,35 @@ void show_position_widgets(void) {
     if (pos_disabled) {
         ImGui::EndDisabled();
     }
+}
 
-    static pointers::Vec3d saved_pos{0, 0, 0};
-    static bool any_saved = false;
-
+/**
+ * @brief Draws the save/load position widgets.
+ */
+void draw_pos_save_load_pos_widgets(void) {
     if (ImGui::Button("Save")) {
-        any_saved = true;
-        saved_pos = *pos;
+        cheats::save_pos();
+    }
+
+    auto load_disabled = !cheats::has_saved_pos();
+    if (load_disabled) {
+        ImGui::BeginDisabled();
     }
     ImGui::SameLine();
-    if (ImGui::Button("Load") && any_saved) {
-        *pos = saved_pos;
+    if (ImGui::Button("Load")) {
+        cheats::load_pos();
+    }
+    if (load_disabled) {
+        ImGui::EndDisabled();
     }
 }
 
+/**
+ * @brief Draws a checkbox which may be disabled.
+ *
+ * @param name The checkbox's name.
+ * @param ptr The checkbox's value, or nullptr if disabled.
+ */
 void draw_nullable_checkbox(const char* name, bool* ptr) {
     bool dummy = false;
 
@@ -66,22 +77,11 @@ void draw_nullable_checkbox(const char* name, bool* ptr) {
 }
 
 /**
- * @brief Shows the widgets to enable individual cheats.
+ * @brief Draws the widgets to enable individual cheats.
  */
-void show_cheats_widgets(void) {
-    ImGui::SeparatorText("Cheats");
-
-    static bool ghost_on = false;
-    bool old_ghost = ghost_on;
-
-    ImGui::Checkbox("Ghost", &ghost_on);
-
-    if (ghost_on != old_ghost) {
-        if (ghost_on) {
-            pointers::enable_ghost();
-        } else {
-            pointers::disable_ghost();
-        }
+void draw_cheats_widgets(void) {
+    if (ImGui::Button("Ghost")) {
+        cheats::toggle_ghost();
     }
 
     draw_nullable_checkbox("Turbo", pointers::turbo());
@@ -95,13 +95,13 @@ void render(void) {
         return;
     }
 
-    ImGui::ShowDemoWindow();
+    ImGui::Begin("Talos 2 Cheats (Ctrl+Shift+Ins)", &showing_window, ImGuiWindowFlags_NoCollapse);
 
-    ImGui::Begin("apple's Talos 2 Cheats (Ctrl+Shift+Ins)", &showing_window,
-                 ImGuiWindowFlags_NoCollapse);
-
-    show_cheats_widgets();
-    show_position_widgets();
+    ImGui::SeparatorText("Cheats");
+    draw_cheats_widgets();
+    ImGui::SeparatorText("Position");
+    draw_position_widgets();
+    draw_pos_save_load_pos_widgets();
 
     ImGui::End();
 }

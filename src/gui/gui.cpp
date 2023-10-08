@@ -49,17 +49,27 @@ void show_position_widgets(void) {
     }
 }
 
-}  // namespace
+void draw_nullable_checkbox(const char* name, bool* ptr) {
+    bool dummy = false;
 
-void render(void) {
-    if (!showing_window) {
-        return;
+    auto disabled = ptr == nullptr;
+
+    if (disabled) {
+        ImGui::BeginDisabled();
+        ptr = &dummy;
     }
+    ImGui::Checkbox(name, ptr);
 
-    ImGui::ShowDemoWindow();
+    if (disabled) {
+        ImGui::EndDisabled();
+    }
+}
 
-    ImGui::Begin("apple's Talos 2 Cheats (Ctrl+Shift+Ins)", &showing_window,
-                 ImGuiWindowFlags_NoCollapse);
+/**
+ * @brief Shows the widgets to enable individual cheats.
+ */
+void show_cheats_widgets(void) {
+    ImGui::SeparatorText("Cheats");
 
     static bool ghost_on = false;
     bool old_ghost = ghost_on;
@@ -74,6 +84,23 @@ void render(void) {
         }
     }
 
+    draw_nullable_checkbox("Turbo", pointers::turbo());
+    draw_nullable_checkbox("God", pointers::god());
+}
+
+}  // namespace
+
+void render(void) {
+    if (!showing_window) {
+        return;
+    }
+
+    ImGui::ShowDemoWindow();
+
+    ImGui::Begin("apple's Talos 2 Cheats (Ctrl+Shift+Ins)", &showing_window,
+                 ImGuiWindowFlags_NoCollapse);
+
+    show_cheats_widgets();
     show_position_widgets();
 
     ImGui::End();

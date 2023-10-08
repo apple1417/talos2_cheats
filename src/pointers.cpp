@@ -22,7 +22,12 @@ const constexpr auto INPUT_COMP_BASE_PTR_OFFSET = 0;
 const constexpr auto INPUT_COMP_OUTER_OFFSET = 0x20;
 
 const constexpr auto PAWN_COLLISION_COMP_OFFSET = 0x1C0;
+const constexpr auto PAWN_MOVE_COMP_OFFSET = 0x348;
+const constexpr auto PAWN_GOD_OFFSET = 0x660;
+
 const constexpr auto CYLINDER_COMP_POS_OFFSET = 0x260;
+
+const constexpr auto MOVE_COMP_TURBO_OFFSET = 0xEF8;
 
 const constinit memory::Pattern<16> TALOS_CHAR_ENABLE_GHOST_PATTERN{
     "48 83 EC 28"        // sub rsp, 28
@@ -80,6 +85,15 @@ R safe_dereference(uintptr_t base, std::initializer_list<ptrdiff_t> offsets) {
         ptr += offset;
     }
 
+    // Extra read to make sure we can dereference the final offset
+    uintptr_t dummy{};
+    size_t num_read{};
+    if (!ReadProcessMemory(this_proc, reinterpret_cast<LPCVOID>(ptr), &dummy, sizeof(dummy),
+                           &num_read)
+        || num_read != sizeof(ptr)) {
+        return 0;
+    }
+
     if constexpr (std::is_same_v<R, decltype(ptr)>) {
         return ptr;
     } else {
@@ -102,6 +116,21 @@ Vec3d* position(void) {
     return safe_dereference<Vec3d*>(input_comp_base_ptr,
                                     {INPUT_COMP_BASE_PTR_OFFSET, INPUT_COMP_OUTER_OFFSET,
                                      PAWN_COLLISION_COMP_OFFSET, CYLINDER_COMP_POS_OFFSET});
+}
+
+// These two are single byte values which appear to be a standard 0 = off, non-zero = on
+// We'll just pretend they're bools to simplify the code interacting with these
+static_assert(sizeof(bool) == 1);
+
+bool* god(void) {
+    return safe_dereference<bool*>(input_comp_base_ptr, {INPUT_COMP_BASE_PTR_OFFSET,
+                                                         INPUT_COMP_OUTER_OFFSET, PAWN_GOD_OFFSET});
+}
+
+bool* turbo(void) {
+    return safe_dereference<bool*>(input_comp_base_ptr,
+                                   {INPUT_COMP_BASE_PTR_OFFSET, INPUT_COMP_OUTER_OFFSET,
+                                    PAWN_MOVE_COMP_OFFSET, MOVE_COMP_TURBO_OFFSET});
 }
 
 void enable_ghost(void) {

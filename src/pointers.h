@@ -17,6 +17,22 @@ struct Vec3d {
 Vec3d* position(void);
 
 /**
+ * @brief Gets the current state of god mode.
+ * @note Should be set to 1/0.
+ *
+ * @return The god mode state, or nullptr if no valid pointer exists.
+ */
+bool* god(void);
+
+/**
+ * @brief Gets the current state of turbo.
+ * @note Should be set to 1/0.
+ *
+ * @return The turbo state, or nullptr if no valid pointer exists.
+ */
+bool* turbo(void);
+
+/**
  * @brief Enables ghost mode.
  */
 void enable_ghost(void);

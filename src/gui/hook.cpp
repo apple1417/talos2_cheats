@@ -114,7 +114,7 @@ void hook(void) {
     // As a workaround hack, we'll just sleep for a bit to let it get loaded
 
     // NOLINTNEXTLINE(readability-magic-numbers)
-    // std::this_thread::sleep_for(std::chrono::seconds(5));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 
     // Need to check dx12 first, since dx11 will still get a hit when running it
     if (kiero::init(kiero::RenderType::D3D12) == kiero::Status::Success) {

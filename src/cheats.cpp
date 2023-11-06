@@ -5,11 +5,29 @@
 
 namespace t2c::cheats {
 
-void toggle_ghost(void) {
-    static bool enabled = false;
-    enabled = !enabled;
+namespace {
 
-    if (enabled) {
+// We can't easily query the actual ghost state, so track it ourselves
+bool think_ghost_enabled = false;
+
+}  // namespace
+
+struct CheatBinds enabled_binds = {true, true, true, false, false};
+
+void set_ghost(void) {
+    think_ghost_enabled = true;
+    pointers::enable_ghost();
+}
+
+void set_walk(void) {
+    think_ghost_enabled = false;
+    pointers::disable_ghost();
+}
+
+void toggle_ghost(void) {
+    think_ghost_enabled = !think_ghost_enabled;
+
+    if (think_ghost_enabled) {
         pointers::enable_ghost();
     } else {
         pointers::disable_ghost();

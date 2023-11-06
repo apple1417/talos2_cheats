@@ -37,7 +37,7 @@ void draw_position_widgets(void) {
  * @brief Draws the save/load position widgets.
  */
 void draw_pos_save_load_pos_widgets(void) {
-    if (ImGui::Button("Save (M)")) {
+    if (ImGui::Button("Save")) {
         cheats::save_pos();
     }
 
@@ -46,7 +46,7 @@ void draw_pos_save_load_pos_widgets(void) {
         ImGui::BeginDisabled();
     }
     ImGui::SameLine();
-    if (ImGui::Button("Load (R)")) {
+    if (ImGui::Button("Load")) {
         cheats::load_pos();
     }
     if (load_disabled) {
@@ -80,12 +80,27 @@ void draw_nullable_checkbox(const char* name, bool* ptr) {
  * @brief Draws the widgets to enable individual cheats.
  */
 void draw_cheats_widgets(void) {
-    if (ImGui::Button("Ghost (Y)")) {
-        cheats::toggle_ghost();
+    if (ImGui::Button("Set Ghost")) {
+        cheats::set_ghost();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Set Walk")) {
+        cheats::set_walk();
     }
 
-    draw_nullable_checkbox("Turbo (J)", pointers::turbo());
-    draw_nullable_checkbox("God (G)", pointers::god());
+    draw_nullable_checkbox("Turbo", pointers::turbo());
+    draw_nullable_checkbox("God", pointers::god());
+}
+
+/**
+ * @brief Draws the widgets to toggle keybinds.
+ */
+void draw_keybind_widgets(void) {
+    ImGui::Checkbox("Toggle Ghost (Y) ## kb", &cheats::enabled_binds.toggle_ghost);
+    ImGui::Checkbox("Toggle Turbo (J) ## kb", &cheats::enabled_binds.toggle_turbo);
+    ImGui::Checkbox("Toggle God (G) ## kb", &cheats::enabled_binds.toggle_god);
+    ImGui::Checkbox("Save Pos (M) ## kb", &cheats::enabled_binds.save_pos);
+    ImGui::Checkbox("Load Pos (R) ## kb", &cheats::enabled_binds.load_pos);
 }
 
 }  // namespace
@@ -102,6 +117,8 @@ void render(void) {
     ImGui::SeparatorText("Position");
     draw_position_widgets();
     draw_pos_save_load_pos_widgets();
+    ImGui::SeparatorText("Keybinds");
+    draw_keybind_widgets();
 
     ImGui::End();
 }

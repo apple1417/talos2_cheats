@@ -29,21 +29,36 @@ bool process_keyup_hooks(WPARAM w_param) {
                 return true;
             }
 
-        case 'Y':
-            cheats::toggle_ghost();
+        case 'Y': {
+            if (cheats::enabled_binds.toggle_ghost) {
+                cheats::toggle_ghost();
+                return true;
+            }
+        }
+        case 'J': {
+            if (cheats::enabled_binds.toggle_turbo) {
+                cheats::toggle_turbo();
+            }
             return true;
-        case 'J':
-            cheats::toggle_turbo();
+        }
+        case 'G': {
+            if (cheats::enabled_binds.toggle_god) {
+                cheats::toggle_god();
+            }
             return true;
-        case 'G':
-            cheats::toggle_god();
+        }
+        case 'M': {
+            if (cheats::enabled_binds.save_pos) {
+                cheats::save_pos();
+            }
             return true;
-        case 'M':
-            cheats::save_pos();
+        }
+        case 'R': {
+            if (cheats::enabled_binds.load_pos) {
+                cheats::load_pos();
+            }
             return true;
-        case 'R':
-            cheats::load_pos();
-            return true;
+        }
 
         default:
             return false;

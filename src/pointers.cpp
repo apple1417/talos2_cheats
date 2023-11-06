@@ -1,8 +1,5 @@
 #include "pch.h"
 #include "pointers.h"
-#include <memoryapi.h>
-#include <processthreadsapi.h>
-#include <cstddef>
 #include "memory.h"
 
 namespace t2c::pointers {
@@ -29,10 +26,13 @@ const constexpr auto CYLINDER_COMP_POS_OFFSET = 0x260;
 
 const constexpr auto MOVE_COMP_TURBO_OFFSET = 0xEF8;
 
-const constinit memory::Pattern<16> TALOS_CHAR_ENABLE_GHOST_PATTERN{
-    "48 83 EC 28"        // sub rsp, 28
-    "48 89 74 24 ??"     // mov [rsp+40], rsi
-    "48 8B B1 ????????"  // mov rsi, [rcx+00000350]
+const constinit memory::Pattern<23> TALOS_CHAR_ENABLE_GHOST_PATTERN{
+    "40 53"              // push rbx
+    "48 83 EC 20"        // sub rsp, 20
+    "B2 01"              // mov dl, 01
+    "48 8B D9"           // mov rbx, rcx
+    "E8 ????????"        // call Talos2-Win64-Shipping.exe+2561C50
+    "48 8B 83 ????????"  // mov rax, [rbx+00000348]
 };
 
 const constinit memory::Pattern<26> TALOS_CHAR_ENABLE_WALK_PATTERN{

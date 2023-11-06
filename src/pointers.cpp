@@ -6,17 +6,18 @@ namespace t2c::pointers {
 
 namespace {
 
-const constinit memory::Pattern<23> INPUT_COMP_PATTERN{
-    "48 8D 15 ????????"  // lea rdx, [Talos2-Win64-Shipping.exe+8750CF8]
-    "48 8B CB"           // mov rcx, rbx
-    "FF 90 ????????"     // call qword ptr [rax+00000E18]
-    "48 8B 8B ????????"  // mov rcx, [rbx+00000430]
+const constinit memory::Pattern<21> GWORLD_PATTERN{
+    "48 39 3D ????????"  // cmp [Talos2-Win64-Shipping.exe+88C5E00], rdi
+    "75 07"              // jne Talos2-Win64-Shipping.exe+518C65D
+    "48 89 1D ????????"  // mov [Talos2-Win64-Shipping.exe+88C5E00], rbx
+    "E8 ????????"        // call Talos2-Win64-Shipping.exe+51052C0
     ,
     3};
-uintptr_t input_comp_base_ptr{};
+uintptr_t gworld_base_ptr{};
 
-const constexpr auto INPUT_COMP_BASE_PTR_OFFSET = 0;
-const constexpr auto INPUT_COMP_OUTER_OFFSET = 0x20;
+const constexpr auto GWORLD_LEVEL_OFFSET = 0x30;
+const constexpr auto LEVEL_GAMEMODE_OFFSET = 0xA8;
+const constexpr auto GAMEMODE_PAWN_OFFSET = 0x68;
 
 const constexpr auto PAWN_COLLISION_COMP_OFFSET = 0x1C0;
 const constexpr auto PAWN_MOVE_COMP_OFFSET = 0x348;
@@ -119,7 +120,7 @@ R safe_dereference(uintptr_t base, std::initializer_list<ptrdiff_t> offsets) {
 }  // namespace
 
 void init(void) {
-    input_comp_base_ptr = memory::read_offset(INPUT_COMP_PATTERN.sigscan());
+    gworld_base_ptr = memory::read_offset(GWORLD_PATTERN.sigscan());
 
     talos_char_enable_ghost_ptr =
         TALOS_CHAR_ENABLE_GHOST_PATTERN.sigscan<talos_char_enable_ghost_func>();
@@ -135,9 +136,9 @@ void init(void) {
 }
 
 Vec3d* position(void) {
-    return safe_dereference<Vec3d*>(input_comp_base_ptr,
-                                    {INPUT_COMP_BASE_PTR_OFFSET, INPUT_COMP_OUTER_OFFSET,
-                                     PAWN_COLLISION_COMP_OFFSET, CYLINDER_COMP_POS_OFFSET});
+    return safe_dereference<Vec3d*>(
+        gworld_base_ptr, {GWORLD_LEVEL_OFFSET, LEVEL_GAMEMODE_OFFSET, GAMEMODE_PAWN_OFFSET,
+                          PAWN_COLLISION_COMP_OFFSET, CYLINDER_COMP_POS_OFFSET});
 }
 
 // These two are single byte values which appear to be a standard 0 = off, non-zero = on
@@ -145,24 +146,24 @@ Vec3d* position(void) {
 static_assert(sizeof(bool) == 1);
 
 bool* god(void) {
-    return safe_dereference<bool*>(input_comp_base_ptr, {INPUT_COMP_BASE_PTR_OFFSET,
-                                                         INPUT_COMP_OUTER_OFFSET, PAWN_GOD_OFFSET});
+    return safe_dereference<bool*>(gworld_base_ptr, {GWORLD_LEVEL_OFFSET, LEVEL_GAMEMODE_OFFSET,
+                                                     GAMEMODE_PAWN_OFFSET, PAWN_GOD_OFFSET});
 }
 
 bool* turbo(void) {
-    return safe_dereference<bool*>(input_comp_base_ptr,
-                                   {INPUT_COMP_BASE_PTR_OFFSET, INPUT_COMP_OUTER_OFFSET,
-                                    PAWN_MOVE_COMP_OFFSET, MOVE_COMP_TURBO_OFFSET});
+    return safe_dereference<bool*>(
+        gworld_base_ptr, {GWORLD_LEVEL_OFFSET, LEVEL_GAMEMODE_OFFSET, GAMEMODE_PAWN_OFFSET,
+                          PAWN_MOVE_COMP_OFFSET, MOVE_COMP_TURBO_OFFSET});
 }
 
 void enable_ghost(void) {
-    if (talos_char_enable_ghost_ptr == 0) {
+    if (talos_char_enable_ghost_ptr == nullptr) {
         return;
     }
 
     auto pawn = safe_dereference<UTalosCharacter*>(
-        input_comp_base_ptr, {INPUT_COMP_BASE_PTR_OFFSET, INPUT_COMP_OUTER_OFFSET, 0});
-    if (pawn == 0) {
+        gworld_base_ptr, {GWORLD_LEVEL_OFFSET, LEVEL_GAMEMODE_OFFSET, GAMEMODE_PAWN_OFFSET, 0});
+    if (pawn == nullptr) {
         return;
     }
 
@@ -170,13 +171,13 @@ void enable_ghost(void) {
 }
 
 void disable_ghost(void) {
-    if (talos_char_enable_walk_ptr == 0) {
+    if (talos_char_enable_walk_ptr == nullptr) {
         return;
     }
 
     auto pawn = safe_dereference<UTalosCharacter*>(
-        input_comp_base_ptr, {INPUT_COMP_BASE_PTR_OFFSET, INPUT_COMP_OUTER_OFFSET, 0});
-    if (pawn == 0) {
+        gworld_base_ptr, {GWORLD_LEVEL_OFFSET, LEVEL_GAMEMODE_OFFSET, GAMEMODE_PAWN_OFFSET, 0});
+    if (pawn == nullptr) {
         return;
     }
 

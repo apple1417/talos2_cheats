@@ -22,47 +22,52 @@ WNDPROC window_proc_ptr{};
  */
 bool process_keyup_hooks(WPARAM w_param) {
     switch (w_param) {
-        case VK_INSERT:
+        case VK_INSERT: {
             if ((GetKeyState(VK_CONTROL) & KEY_STATE_DOWN) != 0
                 && (GetKeyState(VK_SHIFT) & KEY_STATE_DOWN) != 0) {
                 gui::toggle_showing();
                 return true;
             }
+            break;
+        }
 
         case 'Y': {
             if (cheats::enabled_binds.toggle_ghost) {
                 cheats::toggle_ghost();
                 return true;
             }
+            break;
         }
         case 'J': {
             if (cheats::enabled_binds.toggle_turbo) {
                 cheats::toggle_turbo();
+                return true;
             }
-            return true;
+            break;
         }
         case 'G': {
             if (cheats::enabled_binds.toggle_god) {
                 cheats::toggle_god();
+                return true;
             }
-            return true;
+            break;
         }
         case 'M': {
             if (cheats::enabled_binds.save_pos) {
                 cheats::save_pos();
+                return true;
             }
-            return true;
+            break;
         }
         case 'R': {
             if (cheats::enabled_binds.load_pos) {
                 cheats::load_pos();
+                return true;
             }
-            return true;
+            break;
         }
-
-        default:
-            return false;
     }
+    return false;
 }
 
 /**

@@ -7,6 +7,7 @@ target_compile_features(talos2_cheats PUBLIC cxx_std_20)
 set_target_properties(talos2_cheats PROPERTIES
     EXPORT_COMPILE_COMMANDS True
     COMPILE_WARNING_AS_ERROR True
+    PREFIX ""
 )
 
 if(MSVC)
@@ -15,7 +16,10 @@ else()
     target_compile_options(talos2_cheats PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-add_subdirectory(libs/minhook)
+add_subdirectory(libs/minhook EXCLUDE_FROM_ALL)
+
+add_subdirectory(libs/pluginloader EXCLUDE_FROM_ALL)
+set_target_properties(pluginloader_xinput1_3 PROPERTIES EXCLUDE_FROM_ALL 0)
 
 add_library(imgui OBJECT
     "libs/imgui/imgui_demo.cpp"
@@ -48,3 +52,17 @@ target_link_libraries(talos2_cheats PUBLIC
 )
 
 target_precompile_headers(talos2_cheats PUBLIC "src/pch.h")
+
+install(
+    TARGETS
+        pluginloader_xinput1_3
+    RUNTIME DESTINATION
+        .
+)
+
+install(
+    TARGETS
+        talos2_cheats
+        RUNTIME DESTINATION
+        Plugins
+)
